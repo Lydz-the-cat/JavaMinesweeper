@@ -34,6 +34,8 @@ class Minesweeper extends Game{
 
         placeBombs(10);
 
+
+
         Point buttonPoints[] = new Point[4];
         buttonPoints[0] = new Point(0, 0);
         buttonPoints[1] = new Point(0, 40);
@@ -80,7 +82,7 @@ class Minesweeper extends Game{
 
     }
 
-    public void placeBombs(int numBombs){
+    private void placeBombs(int numBombs){
         ArrayList<Square> shuffledSquares = new ArrayList<Square>();
 
         for (int i = 0; i < squareGrid.length; i++){
@@ -94,6 +96,22 @@ class Minesweeper extends Game{
             shuffledSquares.get(k).setBomb(true);
         }
 
+    }
+
+    private void placeNums(){
+        for (int i = 0; i < squareGrid.length; i++){
+            for (int j = 0; j < squareGrid[0].length; j++){
+                int prox = checkNums(i, j);
+                squareGrid[i][j].setProx(prox);
+            }
+        }
+
+    }
+
+    private int checkNums(int x, int y){
+        if (x != 0){
+            if (squareGrid[x][y-1])
+        }
     }
 
     public static void main (String[] args) {

@@ -7,6 +7,7 @@ public class Square extends Polygon implements MouseListener{
 
     private boolean isClicked = false;
     private boolean isBomb = false;
+    private int proximity = 0;
 
     public Square(Point[] inShape, Point inPosition, double inRotation, int inSideLength){
         super(inShape, inPosition, inRotation);
@@ -31,6 +32,10 @@ public class Square extends Polygon implements MouseListener{
                 brush.setColor(Color.WHITE);
             }
         }
+        if (proximity > 0){
+            brush.setColor(Color.darkGray);
+            brush.drawString(String.valueOf(proximity), (int) position.getX(), (int) position.getY());
+        }
         brush.fillPolygon(xvalues, yvalues, squarePoints.length);
 
     }
@@ -38,6 +43,7 @@ public class Square extends Polygon implements MouseListener{
     public void reset(){
         isClicked = false;
         isBomb = false;
+        proximity = 0;
     }
 
     public boolean isBomb(){
@@ -46,6 +52,15 @@ public class Square extends Polygon implements MouseListener{
 
     public void setBomb(boolean bomb){
         isBomb = bomb;
+        proximity = -1;
+    }
+
+    public int getProx(){
+        return proximity;
+    }
+
+    public void setProx(int newProx){
+        proximity = newProx;
     }
 
     public void mouseClicked(MouseEvent e) {
