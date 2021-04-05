@@ -25,7 +25,7 @@ class Minesweeper extends Game{
         for (int i = 0; i < 9; i++){
             startingPoint.setX(240);
             for (int j = 0; j < 9; j++){
-                Square newSquare = new Square(pointArray, startingPoint.clone(), 0.0, 5);
+                Square newSquare = new Square(pointArray, startingPoint.clone(), 0.0, 5, this);
                 this.addMouseListener(newSquare);
                 squareGrid[i][j] = newSquare;
 
@@ -123,8 +123,8 @@ class Minesweeper extends Game{
 
         if (gameOverButton.getButtonStatus() == true && gameOver == true){
             gameOver = false;
-            for (int i = 0; i < squareGrid[0].length; i++){
-                for (int j = 0; j < squareGrid.length; j++){
+            for (int i = 0; i < squareGrid.length; i++){
+                for (int j = 0; j < squareGrid[0].length; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
                         squareGrid[i][j].reset();
                         gameOverButton.reset();
@@ -140,8 +140,8 @@ class Minesweeper extends Game{
     private void placeBombs(int numBombs){
         ArrayList<Square> shuffledSquares = new ArrayList<Square>();
 
-        for (int i = 0; i < squareGrid[0].length; i++){
-            for (int j = 0; j < squareGrid.length; j++){
+        for (int i = 0; i < squareGrid.length; i++){
+            for (int j = 0; j < squareGrid[0].length; j++){
                 shuffledSquares.add(squareGrid[i][j]);
             }
         }
@@ -153,16 +153,16 @@ class Minesweeper extends Game{
 
     }
 
+    //The following 3 methods deal with placing the numbers indicating the squares' proximity to a mine
     private void placeNums(){
-        for (int i = 0; i < squareGrid[0].length; i++){
-            for (int j = 0; j < squareGrid.length; j++){
+        for (int i = 0; i < squareGrid.length; i++){
+            for (int j = 0; j < squareGrid[0].length; j++){
                 int prox = checkNums(i, j);
                 squareGrid[i][j].setProx(prox);
             }
         }
 
     }
-
     private int checkNums(int x, int y){
         int numBombs = 0;
         if (squareGrid[x][y].isBomb()){
@@ -213,8 +213,9 @@ class Minesweeper extends Game{
         return numBombs;
     }
 
+    //A helper method for determining if a square is a corner/edge square
     private boolean isWithinGrid(int x, int y){
-        if (x >= 0 && x < squareGrid[0].length && y >= 0 && y < squareGrid.length){
+        if (x >= 0 && x < squareGrid.length && y >= 0 && y < squareGrid[0].length){
             return true;
         }
         else{
@@ -222,12 +223,63 @@ class Minesweeper extends Game{
         }
     }
 
+    //If a square with no bombs around it is clicked,
+    public void revealBlanks(int x, int y){
+        squareGrid[x][y].revealSquare();
+
+        if (isWithinGrid(x-1, y+1)){
+            if (squareGrid[x-1][y+1].getProx() == 0 && squareGrid[x-1][y+1].isClicked() == false){
+                revealBlanks(x-1, y+1);
+            }
+        }
+        if (isWithinGrid(x, y+1)){
+            if (squareGrid[x][y+1].getProx() == 0 && squareGrid[x][y+1].isClicked() == false){
+                revealBlanks(x, y+1);
+            }
+        }
+        if (isWithinGrid(x+1, y+1)){
+            if (squareGrid[x+1][y+1].getProx() == 0 && squareGrid[x+1][y+1].isClicked() == false){
+                revealBlanks(x+1, y+1);
+            }
+        }
+        if (isWithinGrid(x-1, y)){
+            if (squareGrid[x-1][y].getProx() == 0 && squareGrid[x-1][y].isClicked() == false){
+                revealBlanks(x-1, y);
+            }
+        }
+        if (isWithinGrid(x+1, y)){
+            if (squareGrid[x+1][y].getProx() == 0 && squareGrid[x+1][y].isClicked() == false){
+                revealBlanks(x+1, y);
+            }
+        }
+        if (isWithinGrid(x-1, y-1)){
+            if (squareGrid[x-1][y-1].getProx() == 0 && squareGrid[x-1][y-1].isClicked() == false){
+                revealBlanks(x-1, y-1);
+            }
+        }
+        if (isWithinGrid(x, y-1)){
+            if (squareGrid[x][y-1].getProx() == 0 && squareGrid[x][y-1].isClicked() == false){
+                revealBlanks(x, y-1);
+            }
+        }
+        if (isWithinGrid(x+1, y-1)){
+            if (squareGrid[x+1][y-1].getProx() == 0 && squareGrid[x+1][y-1].isClicked() == false){
+                revealBlanks(x+1, y-1);
+            }
+        }
+    }
+
+    //This method is used to uncover all of the squares on the gameboard
     private void revealSquares(){
-        for (int i = 0; i < squareGrid[0].length; i++){
-            for (int j = 0; j < squareGrid.length; j++){
+        for (int i = 0; i < squareGrid.length; i++){
+            for (int j = 0; j < squareGrid[0].length; j++){
                 squareGrid[i][j].revealSquare();
             }
         }
+    }
+
+    public Square[][] getGrid(){
+        return squareGrid;
     }
     public static void main (String[] args) {
         Minesweeper m = new Minesweeper();

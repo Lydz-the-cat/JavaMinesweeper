@@ -10,10 +10,13 @@ public class Square extends Polygon implements MouseListener{
     private boolean isBomb = false;
     private boolean gameOver = false;
 
-    public Square(Point[] inShape, Point inPosition, double inRotation, int inSideLength){
+    private Minesweeper minesweeper;
+
+    public Square(Point[] inShape, Point inPosition, double inRotation, int inSideLength, Minesweeper game){
         super(inShape, inPosition, inRotation);
 
         sideLength = inSideLength;
+        minesweeper = game;
     }
 
     public void paint(Graphics brush){
@@ -63,6 +66,10 @@ public class Square extends Polygon implements MouseListener{
         return gameOver;
     }
 
+    public boolean isClicked(){
+        return isClicked;
+    }
+
     public void revealSquare(){
         isClicked = true;
     }
@@ -82,6 +89,17 @@ public class Square extends Polygon implements MouseListener{
             isClicked = true;
             if (this.isBomb()){
                 gameOver = true;
+            }
+            else if (proximity == 0){
+                Square[][] squareGrid = minesweeper.getGrid();
+
+                for (int i = 0; i < squareGrid.length; i++){
+                    for (int j = 0; j < squareGrid[0].length; j++){
+                        if (squareGrid[i][j] == this){
+                            minesweeper.revealBlanks(i, j);
+                        }
+                    }
+                }
             }
         }
     }
