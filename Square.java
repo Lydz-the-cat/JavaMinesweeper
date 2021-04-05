@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 public class Square extends Polygon implements MouseListener{
     private int sideLength;
-
+    private int proximity = 0;
+    
     private boolean isClicked = false;
     private boolean isBomb = false;
-    private int proximity = 0;
+    private boolean gameOver = false;
 
     public Square(Point[] inShape, Point inPosition, double inRotation, int inSideLength){
         super(inShape, inPosition, inRotation);
@@ -24,25 +25,28 @@ public class Square extends Polygon implements MouseListener{
             yvalues[i] = (int) squarePoints[i].getY();
         }
         if (isClicked == false){
-            brush.setColor(Color.GRAY);
+            brush.setColor(Color.lightGray);
         } else{
             if (isBomb){
-                brush.setColor(Color.RED);
+                brush.setColor(Color.red);
             } else{
-                brush.setColor(Color.WHITE);
+                brush.setColor(Color.white);
             }
         }
-        if (proximity > 0){
-            brush.setColor(Color.darkGray);
-            brush.drawString(String.valueOf(proximity), (int) position.getX(), (int) position.getY());
-        }
         brush.fillPolygon(xvalues, yvalues, squarePoints.length);
+        if (isClicked == true){
+            if (this.getProx() > 0){
+                brush.setColor(Color.BLACK);
+                brush.drawString(String.valueOf(this.getProx()), (int) position.getX() + 7, (int) position.getY() + 10);
+            }
+        }
 
     }
 
     public void reset(){
         isClicked = false;
         isBomb = false;
+        gameOver = false;
         proximity = 0;
     }
 
@@ -53,6 +57,14 @@ public class Square extends Polygon implements MouseListener{
     public void setBomb(boolean bomb){
         isBomb = bomb;
         proximity = -1;
+    }
+
+    public boolean isGameOver(){
+        return gameOver;
+    }
+
+    public void revealSquare(){
+        isClicked = true;
     }
 
     public int getProx(){
@@ -68,6 +80,9 @@ public class Square extends Polygon implements MouseListener{
 
         if (this.contains(clickPoint)){
             isClicked = true;
+            if (this.isBomb()){
+                gameOver = true;
+            }
         }
     }
 

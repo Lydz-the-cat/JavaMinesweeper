@@ -7,6 +7,8 @@ import java.util.Collections;
 class Minesweeper extends Game{
     private Square[][] squareGrid = new Square[9][9];
     private ResetButton resetButton;
+    private ResetButton gameOverButton;
+    private boolean gameOver = false;
 
     public Minesweeper(){
         super("Minesweeper!",800,600);
@@ -33,18 +35,27 @@ class Minesweeper extends Game{
         }
 
         placeBombs(10);
+        placeNums();
 
+        //Array of points for the reset button on the left
+        Point buttonPoints1[] = new Point[4];
+        buttonPoints1[0] = new Point(0, 0);
+        buttonPoints1[1] = new Point(0, 40);
+        buttonPoints1[2] = new Point(60, 40);
+        buttonPoints1[3] = new Point(60, 0);
+        Point buttonPosReset = new Point(150,100);
 
+        Point buttonPoints2[] = new Point[4];
+        buttonPoints2[0] = new Point(0, 0);
+        buttonPoints2[1] = new Point(0, 40);
+        buttonPoints2[2] = new Point(80, 40);
+        buttonPoints2[3] = new Point(80, 0);
+        Point buttonPosGameOver = new Point(400, 260);
 
-        Point buttonPoints[] = new Point[4];
-        buttonPoints[0] = new Point(0, 0);
-        buttonPoints[1] = new Point(0, 40);
-        buttonPoints[2] = new Point(60, 40);
-        buttonPoints[3] = new Point(60, 0);
-        Point buttonPos = new Point(150,100);
-
-        resetButton = new ResetButton(buttonPoints, buttonPos, 0.0, 600, 800);
+        resetButton = new ResetButton(buttonPoints1, buttonPosReset, 0.0, 600, 800);
+        gameOverButton = new ResetButton(buttonPoints2, buttonPosGameOver, 0.0, 600, 800);
         this.addMouseListener(resetButton);
+        this.addMouseListener(gameOverButton);
 
     }
 
@@ -67,7 +78,35 @@ class Minesweeper extends Game{
             }
         }
 
+        if (gameOver!=true) {
+            for (int i = 0; i < 9; i++){
+                for (int j = 0; j < 9; j++){
+                    if (squareGrid[i][j].isGameOver()){
+                        
+                        gameOver = true;
+                        gameOverButton.reset();
+                        
+                        revealSquares();
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (gameOver) {
+            brush.setColor(Color.lightGray);
+            brush.fillRect(320,200,200,120);
+            brush.setColor(Color.black);
+            brush.drawString("Game Over!",385,230);
+
+            gameOverButton.paint(brush);
+            brush.setColor(Color.black);
+            brush.drawString("play again",390,275);
+        }
+
         if (resetButton.getButtonStatus() == true){
+            gameOver = false;
             for (int i = 0; i < 9; i++){
                 for (int j = 0; j < 9; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
@@ -78,15 +117,31 @@ class Minesweeper extends Game{
             }
 
             placeBombs(10);
+            placeNums();
+            
         }
 
+        if (gameOverButton.getButtonStatus() == true && gameOver == true){
+            gameOver = false;
+            for (int i = 0; i < squareGrid[0].length; i++){
+                for (int j = 0; j < squareGrid.length; j++){
+                    if (squareGrid != null && squareGrid[i][j] != null){
+                        squareGrid[i][j].reset();
+                        gameOverButton.reset();
+                    }
+                }
+            }
+
+            placeBombs(10);
+            placeNums();
+        }
     }
 
     private void placeBombs(int numBombs){
         ArrayList<Square> shuffledSquares = new ArrayList<Square>();
 
-        for (int i = 0; i < squareGrid.length; i++){
-            for (int j = 0; j < squareGrid[0].length; j++){
+        for (int i = 0; i < squareGrid[0].length; i++){
+            for (int j = 0; j < squareGrid.length; j++){
                 shuffledSquares.add(squareGrid[i][j]);
             }
         }
@@ -99,8 +154,8 @@ class Minesweeper extends Game{
     }
 
     private void placeNums(){
-        for (int i = 0; i < squareGrid.length; i++){
-            for (int j = 0; j < squareGrid[0].length; j++){
+        for (int i = 0; i < squareGrid[0].length; i++){
+            for (int j = 0; j < squareGrid.length; j++){
                 int prox = checkNums(i, j);
                 squareGrid[i][j].setProx(prox);
             }
@@ -109,11 +164,71 @@ class Minesweeper extends Game{
     }
 
     private int checkNums(int x, int y){
-        if (x != 0){
-            if (squareGrid[x][y-1])
+        int numBombs = 0;
+        if (squareGrid[x][y].isBomb()){
+            numBombs = -1;
+        } else{
+            if (isWithinGrid(x-1, y+1)){
+                if (squareGrid[x-1][y+1].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x, y+1)){
+                if (squareGrid[x][y+1].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x+1,y+1)){
+                if (squareGrid[x+1][y+1].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x-1,y)){
+                if (squareGrid[x-1][y].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x+1,y)){
+                if (squareGrid[x+1][y].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x-1,y-1)){
+                if (squareGrid[x-1][y-1].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x,y-1)){
+                if (squareGrid[x][y-1].isBomb()){
+                    numBombs++;
+                }
+            }
+            if (isWithinGrid(x+1,y-1)){
+                if (squareGrid[x+1][y-1].isBomb()){
+                    numBombs++;
+                }
+            }
+        }
+
+        return numBombs;
+    }
+
+    private boolean isWithinGrid(int x, int y){
+        if (x >= 0 && x < squareGrid[0].length && y >= 0 && y < squareGrid.length){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
+    private void revealSquares(){
+        for (int i = 0; i < squareGrid[0].length; i++){
+            for (int j = 0; j < squareGrid.length; j++){
+                squareGrid[i][j].revealSquare();
+            }
+        }
+    }
     public static void main (String[] args) {
         Minesweeper m = new Minesweeper();
         m.repaint();
