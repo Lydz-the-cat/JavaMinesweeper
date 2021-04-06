@@ -9,6 +9,8 @@ public class Square extends Polygon implements MouseListener{
     private boolean isClicked = false;
     private boolean isBomb = false;
     private boolean gameOver = false;
+    private boolean gameWon = false;
+    private boolean flagged = false;
 
     private Minesweeper minesweeper;
 
@@ -27,7 +29,9 @@ public class Square extends Polygon implements MouseListener{
             xvalues[i] = (int) squarePoints[i].getX();
             yvalues[i] = (int) squarePoints[i].getY();
         }
-        if (isClicked == false){
+        if (flagged == true){
+            brush.setColor(Color.orange);
+        } else if (isClicked == false){
             brush.setColor(Color.lightGray);
         } else{
             if (isBomb){
@@ -51,6 +55,8 @@ public class Square extends Polygon implements MouseListener{
         isBomb = false;
         gameOver = false;
         proximity = 0;
+        flagged = false;
+        gameWon = false;
     }
 
     public boolean isBomb(){
@@ -86,21 +92,30 @@ public class Square extends Polygon implements MouseListener{
         Point clickPoint = new Point(e.getX(), e.getY());
 
         if (this.contains(clickPoint)){
-            isClicked = true;
-            if (this.isBomb()){
-                gameOver = true;
-            }
-            else if (proximity == 0){
-                Square[][] squareGrid = minesweeper.getGrid();
-
-                for (int i = 0; i < squareGrid.length; i++){
-                    for (int j = 0; j < squareGrid[0].length; j++){
-                        if (squareGrid[i][j] == this){
-                            minesweeper.revealBlanks(i, j);
+            if (e.isControlDown()){
+                if (flagged == true){
+                    flagged = false;
+                } else{
+                    flagged = true;
+                }
+            } else if (flagged == false){
+                isClicked = true;
+                if (isBomb == true){
+                    gameOver = true;
+                }
+                else if (proximity == 0){
+                    Square[][] squareGrid = minesweeper.getGrid();
+    
+                    for (int i = 0; i < squareGrid.length; i++){
+                        for (int j = 0; j < squareGrid[0].length; j++){
+                            if (squareGrid[i][j] == this){
+                                minesweeper.revealBlanks(i, j);
+                            }
                         }
                     }
                 }
-            }
+            }   
+
         }
     }
 

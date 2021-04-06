@@ -7,7 +7,7 @@ import java.util.Collections;
 class Minesweeper extends Game{
     private Square[][] squareGrid = new Square[9][9];
     private ResetButton resetButton;
-    private ResetButton gameOverButton;
+    private ResetButton playAgainButton;
     private boolean gameOver = false;
 
     public Minesweeper(){
@@ -53,9 +53,9 @@ class Minesweeper extends Game{
         Point buttonPosGameOver = new Point(400, 260);
 
         resetButton = new ResetButton(buttonPoints1, buttonPosReset, 0.0, 600, 800);
-        gameOverButton = new ResetButton(buttonPoints2, buttonPosGameOver, 0.0, 600, 800);
+        playAgainButton = new ResetButton(buttonPoints2, buttonPosGameOver, 0.0, 600, 800);
         this.addMouseListener(resetButton);
-        this.addMouseListener(gameOverButton);
+        this.addMouseListener(playAgainButton);
 
     }
 
@@ -84,7 +84,7 @@ class Minesweeper extends Game{
                     if (squareGrid[i][j].isGameOver()){
                         
                         gameOver = true;
-                        gameOverButton.reset();
+                        playAgainButton.reset();
                         
                         revealSquares();
 
@@ -100,7 +100,7 @@ class Minesweeper extends Game{
             brush.setColor(Color.black);
             brush.drawString("Game Over!",385,230);
 
-            gameOverButton.paint(brush);
+            playAgainButton.paint(brush);
             brush.setColor(Color.black);
             brush.drawString("play again",390,275);
         }
@@ -121,13 +121,13 @@ class Minesweeper extends Game{
             
         }
 
-        if (gameOverButton.getButtonStatus() == true && gameOver == true){
+        if (playAgainButton.getButtonStatus() == true && gameOver == true){
             gameOver = false;
             for (int i = 0; i < squareGrid.length; i++){
                 for (int j = 0; j < squareGrid[0].length; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
                         squareGrid[i][j].reset();
-                        gameOverButton.reset();
+                        playAgainButton.reset();
                     }
                 }
             }
@@ -226,45 +226,46 @@ class Minesweeper extends Game{
     //If a square with no bombs around it is clicked,
     public void revealBlanks(int x, int y){
         squareGrid[x][y].revealSquare();
-
-        if (isWithinGrid(x-1, y+1)){
-            if (squareGrid[x-1][y+1].getProx() == 0 && squareGrid[x-1][y+1].isClicked() == false){
-                revealBlanks(x-1, y+1);
+        if (squareGrid[x][y].getProx() == 0){
+            if (isWithinGrid(x-1, y+1)){
+                if (squareGrid[x-1][y+1].isClicked() == false){
+                    revealBlanks(x-1, y+1);
+                }
             }
-        }
-        if (isWithinGrid(x, y+1)){
-            if (squareGrid[x][y+1].getProx() == 0 && squareGrid[x][y+1].isClicked() == false){
-                revealBlanks(x, y+1);
+            if (isWithinGrid(x, y+1)){
+                if (squareGrid[x][y+1].isClicked() == false){
+                    revealBlanks(x, y+1);
+                }
             }
-        }
-        if (isWithinGrid(x+1, y+1)){
-            if (squareGrid[x+1][y+1].getProx() == 0 && squareGrid[x+1][y+1].isClicked() == false){
-                revealBlanks(x+1, y+1);
+            if (isWithinGrid(x+1, y+1)){
+                if (squareGrid[x+1][y+1].isClicked() == false){
+                    revealBlanks(x+1, y+1);
+                }
             }
-        }
-        if (isWithinGrid(x-1, y)){
-            if (squareGrid[x-1][y].getProx() == 0 && squareGrid[x-1][y].isClicked() == false){
-                revealBlanks(x-1, y);
+            if (isWithinGrid(x-1, y)){
+                if (squareGrid[x-1][y].isClicked() == false){
+                    revealBlanks(x-1, y);
+                }
             }
-        }
-        if (isWithinGrid(x+1, y)){
-            if (squareGrid[x+1][y].getProx() == 0 && squareGrid[x+1][y].isClicked() == false){
-                revealBlanks(x+1, y);
+            if (isWithinGrid(x+1, y)){
+                if (squareGrid[x+1][y].isClicked() == false){
+                    revealBlanks(x+1, y);
+                }
             }
-        }
-        if (isWithinGrid(x-1, y-1)){
-            if (squareGrid[x-1][y-1].getProx() == 0 && squareGrid[x-1][y-1].isClicked() == false){
-                revealBlanks(x-1, y-1);
+            if (isWithinGrid(x-1, y-1)){
+                if (squareGrid[x-1][y-1].isClicked() == false){
+                    revealBlanks(x-1, y-1);
+                }
             }
-        }
-        if (isWithinGrid(x, y-1)){
-            if (squareGrid[x][y-1].getProx() == 0 && squareGrid[x][y-1].isClicked() == false){
-                revealBlanks(x, y-1);
+            if (isWithinGrid(x, y-1)){
+                if (squareGrid[x][y-1].isClicked() == false){
+                    revealBlanks(x, y-1);
+                }
             }
-        }
-        if (isWithinGrid(x+1, y-1)){
-            if (squareGrid[x+1][y-1].getProx() == 0 && squareGrid[x+1][y-1].isClicked() == false){
-                revealBlanks(x+1, y-1);
+            if (isWithinGrid(x+1, y-1)){
+                if (squareGrid[x+1][y-1].isClicked() == false){
+                    revealBlanks(x+1, y-1);
+                }
             }
         }
     }
