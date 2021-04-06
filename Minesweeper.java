@@ -6,9 +6,12 @@ import java.util.Collections;
 
 class Minesweeper extends Game{
     private Square[][] squareGrid = new Square[9][9];
+    private int bombNum = 10;
+
     private ResetButton resetButton;
     private ResetButton playAgainButton;
     private boolean gameOver = false;
+    private boolean gameWon = false;
 
     public Minesweeper(){
         super("Minesweeper!",800,600);
@@ -34,7 +37,7 @@ class Minesweeper extends Game{
             startingPoint.setY((startingPoint.getY() + 43.5));
         }
 
-        placeBombs(10);
+        placeBombs(bombNum);
         placeNums();
 
         //Array of points for the reset button on the left
@@ -78,7 +81,7 @@ class Minesweeper extends Game{
             }
         }
 
-        if (gameOver!=true) {
+        if (gameOver != true && gameWon != true) {
             for (int i = 0; i < 9; i++){
                 for (int j = 0; j < 9; j++){
                     if (squareGrid[i][j].isGameOver()){
@@ -87,7 +90,6 @@ class Minesweeper extends Game{
                         playAgainButton.reset();
                         
                         revealSquares();
-
                         break;
                     }
                 }
@@ -105,8 +107,31 @@ class Minesweeper extends Game{
             brush.drawString("play again",390,275);
         }
 
+        if (Square.numClicked == ((squareGrid.length * squareGrid[0].length) - bombNum)){
+            if (gameWon == false){
+                playAgainButton.reset();
+                gameWon = true;               
+            }
+
+            for (int i = 0; i < squareGrid.length; i++){
+                for (int j = 0; j < squareGrid.length; j++){
+                    squareGrid[i][j].setGameWon(true);
+                }
+            }
+
+            brush.setColor(Color.green);
+            brush.fillRect(320,200,200,120);
+            brush.setColor(Color.black);
+            brush.drawString("You won!",390,230);
+
+            playAgainButton.paint(brush);
+            brush.setColor(Color.black);
+            brush.drawString("play again",390,275);
+        }
+
         if (resetButton.getButtonStatus() == true){
             gameOver = false;
+            gameWon = false;
             for (int i = 0; i < 9; i++){
                 for (int j = 0; j < 9; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
@@ -121,8 +146,9 @@ class Minesweeper extends Game{
             
         }
 
-        if (playAgainButton.getButtonStatus() == true && gameOver == true){
+        if (playAgainButton.getButtonStatus() == true && (gameOver == true || gameWon == true)){
             gameOver = false;
+            gameWon = false;
             for (int i = 0; i < squareGrid.length; i++){
                 for (int j = 0; j < squareGrid[0].length; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
@@ -226,6 +252,7 @@ class Minesweeper extends Game{
     //If a square with no bombs around it is clicked,
     public void revealBlanks(int x, int y){
         squareGrid[x][y].revealSquare();
+        Square.numClicked++;
         if (squareGrid[x][y].getProx() == 0){
             if (isWithinGrid(x-1, y+1)){
                 if (squareGrid[x-1][y+1].isClicked() == false){

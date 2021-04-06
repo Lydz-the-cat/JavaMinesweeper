@@ -3,6 +3,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class Square extends Polygon implements MouseListener{
+    public static int numClicked = 0;
+
     private int sideLength;
     private int proximity = 0;
     
@@ -29,6 +31,11 @@ public class Square extends Polygon implements MouseListener{
             xvalues[i] = (int) squarePoints[i].getX();
             yvalues[i] = (int) squarePoints[i].getY();
         }
+
+        if (gameWon){
+            revealSquare();
+        }
+
         if (flagged == true){
             brush.setColor(Color.orange);
         } else if (isClicked == false){
@@ -51,6 +58,7 @@ public class Square extends Polygon implements MouseListener{
     }
 
     public void reset(){
+        numClicked = 0;
         isClicked = false;
         isBomb = false;
         gameOver = false;
@@ -72,6 +80,10 @@ public class Square extends Polygon implements MouseListener{
         return gameOver;
     }
 
+    public void setGameWon(boolean newStatus){
+        gameWon = newStatus;
+    }
+
     public boolean isClicked(){
         return isClicked;
     }
@@ -90,32 +102,37 @@ public class Square extends Polygon implements MouseListener{
 
     public void mouseClicked(MouseEvent e) {
         Point clickPoint = new Point(e.getX(), e.getY());
-
         if (this.contains(clickPoint)){
-            if (e.isControlDown()){
-                if (flagged == true){
-                    flagged = false;
-                } else{
-                    flagged = true;
-                }
-            } else if (flagged == false){
-                isClicked = true;
-                if (isBomb == true){
-                    gameOver = true;
-                }
-                else if (proximity == 0){
-                    Square[][] squareGrid = minesweeper.getGrid();
-    
-                    for (int i = 0; i < squareGrid.length; i++){
-                        for (int j = 0; j < squareGrid[0].length; j++){
-                            if (squareGrid[i][j] == this){
-                                minesweeper.revealBlanks(i, j);
-                            }
+            if (gameWon == false){
+                if (isClicked == false){
+                    if (e.isControlDown()){
+                        if (flagged == true){
+                            flagged = false;
+                        } else{
+                            flagged = true;
                         }
-                    }
-                }
-            }   
-
+                    } else if (flagged == false){
+                        isClicked = true;
+                        if (isBomb == true){
+                            gameOver = true;
+                        }
+                        else if (proximity == 0){
+                            Square[][] squareGrid = minesweeper.getGrid();
+            
+                            for (int i = 0; i < squareGrid.length; i++){
+                                for (int j = 0; j < squareGrid[0].length; j++){
+                                    if (squareGrid[i][j] == this){
+                                        minesweeper.revealBlanks(i, j);
+                                    }
+                                }
+                            }
+                        } else{
+                            numClicked++;
+                            System.out.println("Num clicked: " + numClicked);
+                        }
+                    } 
+                }   
+            }
         }
     }
 
