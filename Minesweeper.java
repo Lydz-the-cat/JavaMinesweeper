@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class Minesweeper extends Game{
-    static int stopwatch = 0;
+    private int counter = 0;
+    private long prevTime;
 
     private Square[][] squareGrid = new Square[9][9];
     private int bombNum = 10;
@@ -14,11 +15,14 @@ class Minesweeper extends Game{
     private ResetButton playAgainButton;
     private boolean gameOver = false;
     private boolean gameWon = false;
+    public boolean gameStarted = false;
 
     public Minesweeper(){
         super("Minesweeper!",800,600);
         this.setFocusable(true);
         this.requestFocus();
+
+        prevTime = System.currentTimeMillis();
 
         Point pointArray[] = new Point[4];
         pointArray[0] = new Point(0, 0);
@@ -70,6 +74,7 @@ class Minesweeper extends Game{
 
         brush.setColor(Color.darkGray);
 	    brush.drawString("M I N E S W E E P E R",350,100);
+        brush.drawString("Time: " + counter + " seconds", 530, 100);
 
         resetButton.paint(brush);
         brush.setColor(Color.black);
@@ -83,7 +88,12 @@ class Minesweeper extends Game{
             }
         }
 
-        if (gameOver != true && gameWon != true) {
+        if (gameOver != true && gameWon != true && gameStarted == true) {
+            if (System.currentTimeMillis() - prevTime >= 1000){
+                counter++;
+                prevTime = System.currentTimeMillis();
+            }
+
             for (int i = 0; i < 9; i++){
                 for (int j = 0; j < 9; j++){
                     if (squareGrid[i][j].isGameOver()){
@@ -124,7 +134,7 @@ class Minesweeper extends Game{
             brush.setColor(Color.lightGray);
             brush.fillRect(320,200,200,120);
             brush.setColor(Color.black);
-            brush.drawString("You won!",390,230);
+            brush.drawString("You won in " + counter + " seconds!",350,230);
 
             playAgainButton.paint(brush);
             brush.setColor(Color.black);
@@ -134,6 +144,8 @@ class Minesweeper extends Game{
         if (resetButton.getButtonStatus() == true){
             gameOver = false;
             gameWon = false;
+            gameStarted = false;
+            counter = 0;
             for (int i = 0; i < 9; i++){
                 for (int j = 0; j < 9; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){
@@ -151,6 +163,8 @@ class Minesweeper extends Game{
         if (playAgainButton.getButtonStatus() == true && (gameOver == true || gameWon == true)){
             gameOver = false;
             gameWon = false;
+            gameStarted = false;
+            counter = 0;
             for (int i = 0; i < squareGrid.length; i++){
                 for (int j = 0; j < squareGrid[0].length; j++){
                     if (squareGrid != null && squareGrid[i][j] != null){

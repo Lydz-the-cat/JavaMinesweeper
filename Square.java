@@ -147,6 +147,7 @@ public class Square extends Polygon implements MouseListener{
                         }
                     } else if (flagged == false){
                         isClicked = true;
+                        minesweeper.gameStarted = true;
                         if (isBomb == true){
                             gameOver = true;
                         }
