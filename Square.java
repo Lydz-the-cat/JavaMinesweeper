@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Square extends Polygon implements MouseListener{
@@ -15,12 +19,36 @@ public class Square extends Polygon implements MouseListener{
     private boolean flagged = false;
 
     private Minesweeper minesweeper;
+    private static BufferedImage bombBufferedImage;
+    private static int bombWidth;
+    private static int bombHeight;
+    private static BufferedImage flagBufferedImage;
+    private static int flagWidth;
+    private static int flagHeight;
 
     public Square(Point[] inShape, Point inPosition, double inRotation, int inSideLength, Minesweeper game){
         super(inShape, inPosition, inRotation);
 
         sideLength = inSideLength;
         minesweeper = game;
+        if (bombBufferedImage == null){
+            try{
+                bombBufferedImage = ImageIO.read(new File("bomb.jpg"));
+                bombWidth = bombBufferedImage.getWidth();
+                bombHeight = bombBufferedImage.getHeight();
+            } catch (IOException ioE){
+                System.out.println("Error: The file does not exist! " + ioE.getMessage());
+            }
+        }
+        if (flagBufferedImage == null){
+            try{
+                flagBufferedImage = ImageIO.read(new File("flag.png"));
+                flagWidth = flagBufferedImage.getWidth();
+                flagHeight = flagBufferedImage.getHeight();
+            } catch (IOException ioE){
+                System.out.println("Error: The file does not exist! " + ioE.getMessage());
+            }
+        }
     }
 
     public void paint(Graphics brush){
@@ -34,20 +62,26 @@ public class Square extends Polygon implements MouseListener{
 
         if (gameWon){
             revealSquare();
+            if (isBomb){
+                flagged = true;
+            }
         }
 
         if (flagged == true){
-            brush.setColor(Color.orange);
+            brush.drawImage(flagBufferedImage, xvalues[0], yvalues[0], xvalues[2], yvalues[2], 0, 0, flagWidth, flagHeight, null);
         } else if (isClicked == false){
             brush.setColor(Color.lightGray);
+            brush.fillPolygon(xvalues, yvalues, squarePoints.length);
         } else{
             if (isBomb){
-                brush.setColor(Color.red);
+                brush.drawImage(bombBufferedImage, xvalues[0], yvalues[0], xvalues[2], yvalues[2], 0, 0, bombWidth, bombHeight, null);
+                
             } else{
                 brush.setColor(Color.white);
+                brush.fillPolygon(xvalues, yvalues, squarePoints.length);
             }
         }
-        brush.fillPolygon(xvalues, yvalues, squarePoints.length);
+        
         if (isClicked == true){
             if (this.getProx() > 0){
                 brush.setColor(Color.BLACK);
@@ -128,7 +162,6 @@ public class Square extends Polygon implements MouseListener{
                             }
                         } else{
                             numClicked++;
-                            System.out.println("Num clicked: " + numClicked);
                         }
                     } 
                 }   

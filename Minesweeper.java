@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class Minesweeper extends Game{
+    static int stopwatch = 0;
+
     private Square[][] squareGrid = new Square[9][9];
     private int bombNum = 10;
 
@@ -119,7 +121,7 @@ class Minesweeper extends Game{
                 }
             }
 
-            brush.setColor(Color.green);
+            brush.setColor(Color.lightGray);
             brush.fillRect(320,200,200,120);
             brush.setColor(Color.black);
             brush.drawString("You won!",390,230);
